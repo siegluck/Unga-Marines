@@ -178,7 +178,6 @@
 	scatter_unwielded = 12
 	recoil_unwielded = 0
 
-
 //-------------------------------------------------------
 //A generic 357 revolver. With a twist.
 
@@ -549,3 +548,235 @@
 	scatter = -1
 	recoil = 2
 	recoil_unwielded = 3
+
+/obj/item/weapon/gun/revolver/t700
+	name = "\improper R-700 'Rubedo' revolver"
+	desc = "Cool gun"
+	icon = 'icons/Marine/gun64.dmi'
+	icon_state = "t700"
+	item_icons = list(
+		slot_l_hand_str = 'icons/mob/items_lefthand_1.dmi',
+		slot_r_hand_str = 'icons/mob/items_righthand_1.dmi',
+		)
+	item_state = "t500"
+	caliber =  CALIBER_500 //codex
+	max_chamber_items = 25 //codex
+	flags_gun_features = GUN_CAN_POINTBLANK|GUN_AMMO_COUNTER|GUN_IFF
+	reciever_flags = AMMO_RECIEVER_HANDFULS|AMMO_RECIEVER_TOGGLES_OPEN
+	gun_skill_category = SKILL_SMARTGUN //Uses SG skill for the penalties.
+	gun_firemode_list = list(GUN_FIREMODE_SEMIAUTO, GUN_FIREMODE_AUTOMATIC)
+	default_ammo_type = /obj/item/ammo_magazine/revolver/t700
+	allowed_ammo_types = list(
+		/obj/item/ammo_magazine/revolver/t700,
+	)
+	force = 30
+	actions_types = null
+	attachable_allowed = list(
+		/obj/item/attachable/magnetic_harness,
+		/obj/item/attachable/stock/t500stock,
+		/obj/item/attachable/t500barrelshort,
+		/obj/item/attachable/t500barrel,
+		/obj/item/attachable/lasersight,
+		/obj/item/attachable/flashlight/under,
+		/obj/item/attachable/lace/t500,
+	)
+	attachable_offset = list("muzzle_x" = 0, "muzzle_y" = 0,"rail_x" = 10, "rail_y" = 20, "under_x" = 19, "under_y" = 13, "stock_x" = -19, "stock_y" = 0)
+	fire_sound = 'sound/weapons/guns/fire/t700.ogg'
+	reload_sound = 'sound/weapons/guns/interact/t700_reload.ogg'
+	unload_sound = 'sound/weapons/guns/interact/t700_unload.ogg'
+	fire_animation = "t700_fire"
+	fire_delay = 0.8 SECONDS
+	akimbo_additional_delay = 1
+	accuracy_mult_unwielded = 0.8
+	accuracy_mult = 1
+	scatter_unwielded = 5
+	scatter = -1
+	recoil = 0
+	recoil_unwielded = 3
+	var/current_heat = 0
+
+/obj/item/ammo_magazine/revolver/t700
+	name = "\improper R-500 speed loader (.500)"
+	icon_state = "t500"
+	desc = "A R-500 BF revolver speed loader."
+	default_ammo = /datum/ammo/bullet/revolver/t700
+	caliber = CALIBER_500
+	max_rounds = 25
+
+/datum/ammo/bullet/revolver/t700
+	name = ".700 Total Annihilation revolver bullet"
+	handful_icon_state = "nigro"
+	handful_amount = 5
+	damage = 40
+	penetration = 100
+	additional_xeno_penetration = 0
+	flags_ammo_behavior = AMMO_BALLISTIC|AMMO_PASS_THROUGH_TURF|AMMO_PASS_THROUGH_MOVABLE
+	shell_speed = 2
+	max_range = 15
+	bullet_color = COLOR_TEAL
+	on_pierce_multiplier = 0.5
+
+/datum/ammo/bullet/revolver/t700/on_hit_mob(mob/M,obj/projectile/P)
+	if(isxeno(M))
+		var/mob/living/carbon/xenomorph/X = M
+		if(X.has_status_effect(STATUS_EFFECT_T700))
+			X.apply_damage(20)
+			playsound(get_turf(X), 'sound/voice/human/female/giggle_1.ogg', 30)
+		X.apply_status_effect(/datum/status_effect/t700, 1.5 SECONDS)
+
+// ***************************************
+// *********** T700
+// ***************************************
+#define T700_STATUS_EFFECT_ARMOR_MULT 0.9
+/datum/status_effect/t700
+	id = "T700status"
+	duration = 2 SECONDS
+	status_type = STATUS_EFFECT_REPLACE
+	///A holder for the exact armor modified by this status effect
+	var/datum/armor/armor_modifier
+	///Used for particles. Holds the particles instead of the mob. See particle_holder for documentation.
+	var/obj/effect/abstract/particle_holder/particle_holder
+
+/datum/status_effect/t700/on_creation(mob/living/new_owner, set_duration)
+	if(new_owner.status_flags & GODMODE)
+		qdel(src)
+		return
+
+	owner = new_owner
+	if(set_duration)
+		duration = set_duration
+
+	particle_holder = new(owner, /particles/t700_status)
+	return ..()
+
+/datum/status_effect/t700/on_apply()
+	. = ..()
+	if(!.)
+		return
+	armor_modifier = owner.soft_armor.scaleAllRatings(T700_STATUS_EFFECT_ARMOR_MULT)
+	owner.soft_armor = owner.soft_armor.detachArmor(armor_modifier)
+
+/datum/status_effect/t700/on_remove()
+	owner.soft_armor = owner.soft_armor.attachArmor(armor_modifier)
+	armor_modifier = null
+	QDEL_NULL(particle_holder)
+	return ..()
+
+/particles/t700_status
+	icon = 'icons/effects/particles/generic_particles.dmi'
+	icon_state = "x"
+	width = 100
+	height = 100
+	count = 1000
+	spawning = 4
+	lifespan = 2
+	fade = 8
+	velocity = list(0, 0)
+	position = generator(GEN_SPHERE, 16, 16, NORMAL_RAND)
+	drift = generator(GEN_VECTOR, list(-0.1, 0), list(0.1, 0))
+	gravity = list(0, -0.4)
+	scale = generator(GEN_VECTOR, list(0.6, 0.6), list(1, 1), NORMAL_RAND)
+	friction = -0.05
+	color = "#18878f"
+
+/obj/item/weapon/gun/rifle/t700
+	name = "\improper R-700 'Rubedo' revolver"
+	desc = "Cool gun"
+	icon = 'icons/Marine/gun64.dmi'
+	icon_state = "t700"
+	item_icons = list(
+		slot_l_hand_str = 'icons/mob/items_lefthand_1.dmi',
+		slot_r_hand_str = 'icons/mob/items_righthand_1.dmi',
+		)
+	item_state = "t500"
+	caliber =  CALIBER_500 //codex
+	max_chamber_items = 25 //codex
+	flags_gun_features = GUN_CAN_POINTBLANK|GUN_AMMO_COUNTER|GUN_IFF
+	reciever_flags = AMMO_RECIEVER_TOGGLES_OPEN
+	gun_skill_category = SKILL_SMARTGUN //Uses SG skill for the penalties.
+	gun_firemode_list = list(GUN_FIREMODE_SEMIAUTO, GUN_FIREMODE_AUTOMATIC)
+	default_ammo_type = /obj/item/ammo_magazine/revolver/t700
+	allowed_ammo_types = list(
+		/obj/item/ammo_magazine/rifle/t700,
+	)
+	force = 30
+	actions_types = null
+	attachable_allowed = list(
+		/obj/item/attachable/magnetic_harness,
+		/obj/item/attachable/stock/t500stock,
+		/obj/item/attachable/t500barrelshort,
+		/obj/item/attachable/t500barrel,
+		/obj/item/attachable/lasersight,
+		/obj/item/attachable/flashlight/under,
+		/obj/item/attachable/lace/t500,
+	)
+	attachable_offset = list("muzzle_x" = 0, "muzzle_y" = 0,"rail_x" = 10, "rail_y" = 20, "under_x" = 19, "under_y" = 13, "stock_x" = -19, "stock_y" = 0)
+	fire_sound = 'sound/weapons/guns/fire/t700.ogg'
+	reload_sound = 'sound/weapons/guns/interact/t700_reload.ogg'
+	unload_sound = 'sound/weapons/guns/interact/t700_unload.ogg'
+	fire_animation = "t700_fire"
+	fire_delay = 0.8 SECONDS
+	akimbo_additional_delay = 1
+	accuracy_mult_unwielded = 0.8
+	accuracy_mult = 1
+	scatter_unwielded = 5
+	scatter = -1
+	recoil = 0
+	recoil_unwielded = 3
+
+/obj/item/ammo_magazine/rifle/t700
+	name = "\improper R-500 speed loader (.500)"
+	icon_state = "tx11"
+	desc = "A R-500 BF revolver speed loader."
+	default_ammo = /datum/ammo/bullet/rifle/t700
+	caliber = CALIBER_500
+	max_rounds = 25
+
+/datum/ammo/bullet/rifle/t700
+	name = ".700 Total Annihilation revolver bullet"
+	handful_icon_state = "nigro"
+	handful_amount = 5
+	damage = 40
+	penetration = 60
+	additional_xeno_penetration = 0
+	flags_ammo_behavior = AMMO_BALLISTIC|AMMO_PASS_THROUGH_TURF|AMMO_PASS_THROUGH_MOVABLE
+	shell_speed = 2
+	max_range = 15
+	bullet_color = COLOR_TEAL
+	on_pierce_multiplier = 0.5
+
+/datum/ammo/bullet/revolver/t700/on_hit_mob(mob/M,obj/projectile/P)
+	if(isxeno(M))
+		var/mob/living/carbon/xenomorph/X = M
+		if(X.has_status_effect(STATUS_EFFECT_T700))
+			X.apply_damage(20)
+			playsound(get_turf(X), 'sound/voice/human/female/giggle_1.ogg', 30)
+		X.apply_status_effect(/datum/status_effect/t700, 1.5 SECONDS)
+
+/obj/item/weapon/gun/revolver/t700/able_to_fire(mob/user)
+	. = ..()
+	if (!.)
+		return
+	if (current_heat > 100)
+		overheat_t700()
+		return TRUE
+	else
+		current_heat += 5
+		to_chat(user, span_warning("[src] geting warmer"))
+		return TRUE
+
+obj/item/weapon/gun/revolver/t700/proc/overheat_t700()
+	cell_explosion(loc, 300, 50)
+
+
+/*
+/obj/item/weapon/gun/revolver/t700/proc/overheat_()
+	for(var/mob/living/carbon/victim in range(1, src)) //Loop through all nearby victims, including the tile.
+		if(!Adjacent(victim))
+			continue
+		victim.visible_message(span_danger("\The [victim] is scalded with hissing green blood!"), \
+		span_danger("You are splattered with sizzling blood! IT BURNS!"))
+		if(victim.stat == CONSCIOUS && !(victim.species.species_flags & NO_PAIN))
+			victim.emote("scream")
+		victim.take_overall_damage(rand(5, 15), BURN, ACID, updating_health = TRUE)
+*/

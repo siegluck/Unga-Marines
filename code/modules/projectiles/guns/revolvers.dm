@@ -549,80 +549,103 @@
 	recoil = 2
 	recoil_unwielded = 3
 
-/obj/item/weapon/gun/revolver/t700
+///////////////////////////
+
+/obj/item/weapon/gun/rifle/t700
 	name = "\improper R-700 'Rubedo' revolver"
-	desc = "Cool gun"
+	desc = "Cool gun please work"
 	icon = 'icons/Marine/gun64.dmi'
 	icon_state = "t700"
 	item_icons = list(
 		slot_l_hand_str = 'icons/mob/items_lefthand_1.dmi',
 		slot_r_hand_str = 'icons/mob/items_righthand_1.dmi',
 		)
-	item_state = "t500"
+	item_state = "t700"
+	fire_animation = "t700_fire"
 	caliber =  CALIBER_500 //codex
-	max_chamber_items = 25 //codex
-	flags_gun_features = GUN_CAN_POINTBLANK|GUN_AMMO_COUNTER|GUN_IFF
-	reciever_flags = AMMO_RECIEVER_HANDFULS|AMMO_RECIEVER_TOGGLES_OPEN
-	gun_skill_category = SKILL_SMARTGUN //Uses SG skill for the penalties.
-	gun_firemode_list = list(GUN_FIREMODE_SEMIAUTO, GUN_FIREMODE_AUTOMATIC)
-	default_ammo_type = /obj/item/ammo_magazine/revolver/t700
-	allowed_ammo_types = list(
-		/obj/item/ammo_magazine/revolver/t700,
-	)
+	reload_sound = 'sound/weapons/guns/interact/t700_reload.ogg'
+	unload_sound = 'sound/weapons/guns/interact/t700_unload.ogg'
+	cocked_sound = 'sound/weapons/guns/interact/cocked.ogg'
+	wield_sound =    'sound/weapons/guns/rifles/Deploy_Wave_RIFLES.ogg'
+	fire_sound = 'sound/weapons/guns/fire/t700.ogg'
+//	dry_fire_sound = 'sound/weapons/guns/fire/m41a_empty.ogg'
+
+	flags_equip_slot = ITEM_SLOT_BACK
+	w_class = WEIGHT_CLASS_BULKY
 	force = 30
+	load_method = MAGAZINE //codex
+	wield_delay = 0.6 SECONDS
+	gun_skill_category = SKILL_SMARTGUN
+	gun_firemode_list = list(GUN_FIREMODE_SEMIAUTO, GUN_FIREMODE_AUTOMATIC) //
+	flags_gun_features = GUN_CAN_POINTBLANK|GUN_AMMO_COUNTER|GUN_IFF
+
+	accuracy_mult_unwielded = 0.7
+	scatter = -1
+	scatter_unwielded = 5
+	recoil = 0
+	recoil_unwielded = 3
+	damage_falloff_mult = 0.5
+	upper_akimbo_accuracy = 5
+	lower_akimbo_accuracy = 3
+	akimbo_additional_delay = 1
+	fire_delay = 0.8 SECONDS // imp
+	accuracy_mult = 1.1
+
+	default_ammo_type = /obj/item/ammo_magazine/rifle/t700
+	allowed_ammo_types = list(
+		/obj/item/ammo_magazine/rifle/t700,
+	)
 	actions_types = null
 	attachable_allowed = list(
 		/obj/item/attachable/magnetic_harness,
-		/obj/item/attachable/stock/t500stock,
-		/obj/item/attachable/t500barrelshort,
-		/obj/item/attachable/t500barrel,
-		/obj/item/attachable/lasersight,
-		/obj/item/attachable/flashlight/under,
-		/obj/item/attachable/lace/t500,
+		/obj/item/attachable/stock/t700stock,
 	)
 	attachable_offset = list("muzzle_x" = 0, "muzzle_y" = 0,"rail_x" = 10, "rail_y" = 20, "under_x" = 19, "under_y" = 13, "stock_x" = -19, "stock_y" = 0)
-	fire_sound = 'sound/weapons/guns/fire/t700.ogg'
-	reload_sound = 'sound/weapons/guns/interact/t700_reload.ogg'
-	unload_sound = 'sound/weapons/guns/interact/t700_unload.ogg'
-	fire_animation = "t700_fire"
-	fire_delay = 0.8 SECONDS
-	akimbo_additional_delay = 1
-	accuracy_mult_unwielded = 0.8
-	accuracy_mult = 1
-	scatter_unwielded = 5
-	scatter = -1
-	recoil = 0
-	recoil_unwielded = 3
-	var/current_heat = 0
+	starting_attachment_types = list(/obj/item/attachable/stock/t700stock)
+//	var/current_heat = 0
 
-/obj/item/ammo_magazine/revolver/t700
-	name = "\improper R-500 speed loader (.500)"
-	icon_state = "t500"
-	desc = "A R-500 BF revolver speed loader."
-	default_ammo = /datum/ammo/bullet/revolver/t700
+/obj/item/ammo_magazine/rifle/t700
+	name = "\improper R-700 speed loader (.500)"
+	desc = "A R-700 BF revolver speed loader."
 	caliber = CALIBER_500
+	icon_state = "t700"
+	w_class = WEIGHT_CLASS_NORMAL
+	default_ammo = /datum/ammo/bullet/rifle/t700
 	max_rounds = 25
+	icon_state_mini = "mag_sg29"
 
-/datum/ammo/bullet/revolver/t700
+/datum/ammo/bullet/rifle/t700
 	name = ".700 Total Annihilation revolver bullet"
-	handful_icon_state = "nigro"
-	handful_amount = 5
-	damage = 40
-	penetration = 100
-	additional_xeno_penetration = 0
-	flags_ammo_behavior = AMMO_BALLISTIC|AMMO_PASS_THROUGH_TURF|AMMO_PASS_THROUGH_MOVABLE
-	shell_speed = 2
-	max_range = 15
 	bullet_color = COLOR_TEAL
+	hud_state = "smartgun"
+	hud_state_empty = "smartgun_empty"
+	flags_ammo_behavior = AMMO_BALLISTIC|AMMO_PASS_THROUGH_TURF|AMMO_PASS_THROUGH_MOVABLE
+	damage = 40
+	max_range = 40
+	penetration = 40
+	additional_xeno_penetration = 0
+	shell_speed = 4
+	damage_falloff = 1
+	accurate_range = 25
+	accurate_range_min = 3
 	on_pierce_multiplier = 0.5
 
-/datum/ammo/bullet/revolver/t700/on_hit_mob(mob/M,obj/projectile/P)
+/datum/ammo/bullet/rifle/t700/on_hit_mob(mob/M,obj/projectile/P)
 	if(isxeno(M))
 		var/mob/living/carbon/xenomorph/X = M
 		if(X.has_status_effect(STATUS_EFFECT_T700))
 			X.apply_damage(20)
 			playsound(get_turf(X), 'sound/voice/human/female/giggle_1.ogg', 30)
 		X.apply_status_effect(/datum/status_effect/t700, 1.5 SECONDS)
+
+/obj/item/attachable/stock/t700stock
+	name = "R-700 stock"
+	desc = "Cool stock for cool revolver."
+	icon = 'icons/Marine/attachments_64.dmi'
+	icon_state = "t700stock"
+	size_mod = 0
+	pixel_shift_x = 0
+	pixel_shift_y = 0
 
 // ***************************************
 // *********** T700
@@ -679,7 +702,38 @@
 	friction = -0.05
 	color = "#18878f"
 
-/obj/item/weapon/gun/rifle/t700
+
+/*
+/obj/item/weapon/gun/revolver/t700/able_to_fire(mob/user)
+	. = ..()
+	if (!.)
+		return
+	if (current_heat > 100)
+		overheat_t700()
+		return TRUE
+	else
+		current_heat += 5
+		to_chat(user, span_warning("[src] geting warmer"))
+		return TRUE
+obj/item/weapon/gun/revolver/t700/proc/overheat_t700()
+	cell_explosion(loc, 300, 50)
+*/
+
+
+/*
+/obj/item/weapon/gun/revolver/t700/proc/overheat_()
+	for(var/mob/living/carbon/victim in range(1, src)) //Loop through all nearby victims, including the tile.
+		if(!Adjacent(victim))
+			continue
+		victim.visible_message(span_danger("\The [victim] is scalded with hissing green blood!"), \
+		span_danger("You are splattered with sizzling blood! IT BURNS!"))
+		if(victim.stat == CONSCIOUS && !(victim.species.species_flags & NO_PAIN))
+			victim.emote("scream")
+		victim.take_overall_damage(rand(5, 15), BURN, ACID, updating_health = TRUE)
+*/
+
+/*
+/obj/item/weapon/gun/revolver/t700
 	name = "\improper R-700 'Rubedo' revolver"
 	desc = "Cool gun"
 	icon = 'icons/Marine/gun64.dmi'
@@ -692,12 +746,12 @@
 	caliber =  CALIBER_500 //codex
 	max_chamber_items = 25 //codex
 	flags_gun_features = GUN_CAN_POINTBLANK|GUN_AMMO_COUNTER|GUN_IFF
-	reciever_flags = AMMO_RECIEVER_TOGGLES_OPEN
+	reciever_flags = AMMO_RECIEVER_HANDFULS|AMMO_RECIEVER_TOGGLES_OPEN
 	gun_skill_category = SKILL_SMARTGUN //Uses SG skill for the penalties.
 	gun_firemode_list = list(GUN_FIREMODE_SEMIAUTO, GUN_FIREMODE_AUTOMATIC)
 	default_ammo_type = /obj/item/ammo_magazine/revolver/t700
 	allowed_ammo_types = list(
-		/obj/item/ammo_magazine/rifle/t700,
+		/obj/item/ammo_magazine/revolver/t700,
 	)
 	force = 30
 	actions_types = null
@@ -723,60 +777,5 @@
 	scatter = -1
 	recoil = 0
 	recoil_unwielded = 3
-
-/obj/item/ammo_magazine/rifle/t700
-	name = "\improper R-500 speed loader (.500)"
-	icon_state = "tx11"
-	desc = "A R-500 BF revolver speed loader."
-	default_ammo = /datum/ammo/bullet/rifle/t700
-	caliber = CALIBER_500
-	max_rounds = 25
-
-/datum/ammo/bullet/rifle/t700
-	name = ".700 Total Annihilation revolver bullet"
-	handful_icon_state = "nigro"
-	handful_amount = 5
-	damage = 40
-	penetration = 60
-	additional_xeno_penetration = 0
-	flags_ammo_behavior = AMMO_BALLISTIC|AMMO_PASS_THROUGH_TURF|AMMO_PASS_THROUGH_MOVABLE
-	shell_speed = 2
-	max_range = 15
-	bullet_color = COLOR_TEAL
-	on_pierce_multiplier = 0.5
-
-/datum/ammo/bullet/revolver/t700/on_hit_mob(mob/M,obj/projectile/P)
-	if(isxeno(M))
-		var/mob/living/carbon/xenomorph/X = M
-		if(X.has_status_effect(STATUS_EFFECT_T700))
-			X.apply_damage(20)
-			playsound(get_turf(X), 'sound/voice/human/female/giggle_1.ogg', 30)
-		X.apply_status_effect(/datum/status_effect/t700, 1.5 SECONDS)
-
-/obj/item/weapon/gun/revolver/t700/able_to_fire(mob/user)
-	. = ..()
-	if (!.)
-		return
-	if (current_heat > 100)
-		overheat_t700()
-		return TRUE
-	else
-		current_heat += 5
-		to_chat(user, span_warning("[src] geting warmer"))
-		return TRUE
-
-obj/item/weapon/gun/revolver/t700/proc/overheat_t700()
-	cell_explosion(loc, 300, 50)
-
-
-/*
-/obj/item/weapon/gun/revolver/t700/proc/overheat_()
-	for(var/mob/living/carbon/victim in range(1, src)) //Loop through all nearby victims, including the tile.
-		if(!Adjacent(victim))
-			continue
-		victim.visible_message(span_danger("\The [victim] is scalded with hissing green blood!"), \
-		span_danger("You are splattered with sizzling blood! IT BURNS!"))
-		if(victim.stat == CONSCIOUS && !(victim.species.species_flags & NO_PAIN))
-			victim.emote("scream")
-		victim.take_overall_damage(rand(5, 15), BURN, ACID, updating_health = TRUE)
+	var/current_heat = 0
 */
